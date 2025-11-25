@@ -2,19 +2,22 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 import importPlugin from "eslint-plugin-import";
-import prettierPlugin from "eslint-plugin-prettier";
 import reactRefresh from "eslint-plugin-react-refresh";
 
-const eslintConfig = defineConfig([
+// Note: eslint-config-prettier is a config package that disables conflicting ESLint rules.
+// We import it dynamically (CJS) because it's not an ESM export.
+const prettierConfig = await import("eslint-config-prettier").then((m) => m.default || m);
+
+export default defineConfig([
   ...nextVitals,
   ...nextTs,
 
-  // Import sorting, React Refresh, and Prettier integration
+  // Plugins + rules
   {
     plugins: {
       import: importPlugin,
-      prettier: prettierPlugin,
       "react-refresh": reactRefresh,
+      // optionally: "prettier": require("eslint-plugin-prettier") // only if you want plugin
     },
 
     rules: {
@@ -28,23 +31,12 @@ const eslintConfig = defineConfig([
         },
       ],
 
-      // --- React Refresh (dev only, but safe to include) ---
+      // --- React Refresh ---
       "react-refresh/only-export-components": "warn",
-
-      // --- Prettier formatting ---
-      // This makes ESLint show Prettier errors in the Problems panel
-      "prettier/prettier": "error",
     },
   },
+  prettierConfig,
 
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-  ]),
+  // Global ignores (keep at the end)
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
 ]);
-
-export default eslintConfig;
