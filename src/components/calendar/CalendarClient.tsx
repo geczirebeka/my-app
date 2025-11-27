@@ -95,20 +95,25 @@ export default function CalendarClient({ club }: Props) {
     return slots;
   }, [selectedDay, club]);
 
-  // Remove slots that overlap with existing bookings
-  const filteredSlots = useMemo(() => {
-    return slots.filter((slot) => {
-      return !bookings.some((b) => {
+  const slotsWithStatus = useMemo(() => {
+    const resolution = 30;
+
+    return slots.map((slot) => {
+      const slotStart = slot.start;
+      const slotEnd = addMinutes(slotStart, resolution);
+
+      const isBooked = bookings.some((b) => {
         const bookedStart = new Date(b.start_ts);
         const bookedEnd = new Date(b.end_ts);
-        const slotEnd = addMinutes(slot.start, 60); // temporary 1hr span
 
         return (
           b.court_id === slot.court.id &&
-          slot.start < bookedEnd &&
+          slotStart < bookedEnd &&
           slotEnd > bookedStart
         );
       });
+
+      return { ...slot, booked: isBooked };
     });
   }, [slots, bookings]);
 
@@ -154,17 +159,26 @@ export default function CalendarClient({ club }: Props) {
               <div className="font-medium mb-2">{court.name}</div>
 
               <div className="flex flex-wrap gap-2">
-                {filteredSlots
+                {slotsWithStatus
                   .filter((s) => s.court.id === court.id)
-                  .map((s, idx) => (
-                    <button
-                      key={idx}
-                      className="px-3 py-2 rounded-lg border bg-white hover:bg-muted text-sm"
-                      onClick={() => selectSlot(s)}
-                    >
-                      {format(s.start, "HH:mm")}
-                    </button>
-                  ))}
+                  .map((s, idx) => {
+                    const base =
+                      "px-3 py-2 rounded-lg border text-sm cursor-pointer";
+                    const available = "bg-white hover:bg-muted";
+                    const booked =
+                      "bg-gray-200 text-gray-500 cursor-not-allowed line-through";
+
+                    return (
+                      <button
+                        key={idx}
+                        disabled={s.booked}
+                        onClick={() => !s.booked && selectSlot(s)}
+                        className={`${base} ${s.booked ? booked : available}`}
+                      >
+                        {format(s.start, "HH:mm")}
+                      </button>
+                    );
+                  })}
               </div>
             </div>
           ))}
