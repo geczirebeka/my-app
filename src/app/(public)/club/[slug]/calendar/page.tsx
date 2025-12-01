@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import CalendarClient from "@/components/calendar/CalendarClient";
-import { createServerClient } from "@/lib/supabase/server";
+import { supabaseServer } from "@/lib/supabase/server";
 
 export default async function CalendarPage({
   params,
@@ -9,7 +9,7 @@ export default async function CalendarPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const supabase = createServerClient();
+  const supabase = supabaseServer();
 
   const { data: club } = await supabase
     .from("clubs")

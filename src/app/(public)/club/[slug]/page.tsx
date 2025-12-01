@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { createServerClient } from "@/lib/supabase/server";
+import { supabaseServer } from "@/lib/supabase/server";
 
 export default async function ClubPage({
   params,
@@ -9,7 +9,7 @@ export default async function ClubPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const supabase = createServerClient();
+  const supabase = supabaseServer();
 
   const { data: club, error } = await supabase
     .from("clubs")
