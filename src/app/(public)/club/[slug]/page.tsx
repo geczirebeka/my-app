@@ -1,8 +1,13 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { createServerClient } from "@/lib/supabase/server";
 
-export default async function ClubPage({ params }) {
+export default async function ClubPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const supabase = createServerClient();
 
@@ -17,7 +22,7 @@ export default async function ClubPage({ params }) {
   return (
     <div className="flex flex-col">
       <div className="w-full h-64 overflow-hidden rounded-b-2xl">
-        <img
+        <Image
           src="https://via.placeholder.com/1200x350?text=Club+Banner"
           alt={club.name}
           className="w-full h-full object-cover"
