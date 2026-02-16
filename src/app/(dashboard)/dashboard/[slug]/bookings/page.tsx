@@ -18,10 +18,7 @@ export default async function BookingsPage({
 
   const { data: club } = await getClubBySlug(slug);
   const { data: courts } = await getCourtsForClub(club.id);
-  const { data: bookings } = await getBookingsForClubOnDate(
-    club.id,
-    dateLookup,
-  );
+  const { data: bookings } = await getBookingsForClubOnDate(club.id, dateLookup);
 
   // Generate time slots every 30 min
   const start = new Date(`${dateLookup}T08:00`);
@@ -36,22 +33,17 @@ export default async function BookingsPage({
     <div className="space-y-8">
       <h1 className="text-2xl font-bold">Bookings</h1>
 
-      {/* DATE SELECTOR */}
       <form className="mb-4">
         <DateSelector />
       </form>
 
-      {/* GRID */}
       <div className="overflow-x-auto">
         <table className="border-collapse min-w-[800px]">
           <thead>
             <tr>
               <th className="border px-4 py-2 bg-gray-100">Time</th>
               {courts?.map((court) => (
-                <th
-                  key={court.id}
-                  className="border px-4 py-2 bg-gray-100 text-left"
-                >
+                <th key={court.id} className="border px-4 py-2 bg-gray-100 text-left">
                   {court.name}
                 </th>
               ))}
@@ -61,22 +53,15 @@ export default async function BookingsPage({
           <tbody>
             {times.map((time) => (
               <tr key={time}>
-                <td className="border px-2 py-1 w-24 bg-gray-50 text-sm">
-                  {time}
-                </td>
+                <td className="border px-2 py-1 w-24 bg-gray-50 text-sm">{time}</td>
 
                 {courts?.map((court) => {
                   const booking = bookings?.find((b) => {
-                    return (
-                      b.court_id === court.id && b.start_time.startsWith(time)
-                    );
+                    return b.court_id === court.id && b.start_time.startsWith(time);
                   });
 
                   return (
-                    <td
-                      key={court.id}
-                      className="border px-2 py-1 h-10 text-sm"
-                    >
+                    <td key={court.id} className="border px-2 py-1 h-10 text-sm">
                       {booking ? (
                         <div className="bg-blue-600 text-white text-xs px-2 py-1 rounded">
                           Booked

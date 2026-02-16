@@ -1,17 +1,7 @@
-// dashboard/[slug]/courts/page.tsx
 import { getClubBySlug } from "@/lib/server/clubs";
-import {
-  getCourtsForClub,
-  createCourt,
-  updateCourt,
-  deleteCourt,
-} from "@/lib/server/courts";
+import { getCourtsForClub, createCourt, updateCourt, deleteCourt } from "@/lib/server/courts";
 
-export default async function CourtsPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function CourtsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
   const { data: club } = await getClubBySlug(slug);
@@ -48,17 +38,12 @@ export default async function CourtsPage({
           required
           className="border px-3 py-2 rounded"
         />
-        <button className="bg-blue-500 text-white px-4 py-2 rounded">
-          Add Court
-        </button>
+        <button className="bg-blue-500 text-white px-4 py-2 rounded">Add Court</button>
       </form>
 
       <div className="space-y-4">
         {courts?.map((court) => (
-          <div
-            key={court.id}
-            className="border p-4 rounded flex items-center justify-between"
-          >
+          <div key={court.id} className="border p-4 rounded flex items-center justify-between">
             <span className="font-medium">{court.name}</span>
 
             <div className="flex gap-2">
@@ -70,16 +55,12 @@ export default async function CourtsPage({
                   defaultValue={court.name}
                   className="border px-2 py-1 rounded"
                 />
-                <button className="bg-yellow-300 text-white px-3 py-1 rounded">
-                  Save
-                </button>
+                <button className="bg-yellow-300 text-white px-3 py-1 rounded">Save</button>
               </form>
 
               <form action={removeCourt}>
                 <input type="hidden" name="id" value={court.id} />
-                <button className="bg-red-400 text-white px-3 py-1 rounded">
-                  Delete
-                </button>
+                <button className="bg-red-400 text-white px-3 py-1 rounded">Delete</button>
               </form>
             </div>
           </div>

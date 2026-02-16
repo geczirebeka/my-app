@@ -31,29 +31,23 @@ export default function CalendarClient({ club }: Props) {
     return [...Array(7)].map((_, i) => addDays(startOfDay(new Date()), i));
   }, []);
 
-  // Load bookings for the selected day
   useEffect(() => {
     async function load() {
       const dateStr = format(selectedDay, "yyyy-MM-dd");
 
-      const res = await fetch(
-        `/api/bookings?clubId=${club.id}&date=${dateStr}`,
-      );
+      const res = await fetch(`/api/bookings?clubId=${club.id}&date=${dateStr}`);
 
       const data = await res.json();
       setBookings(data ?? []);
     }
 
     load();
-  }, [selectedDay, club.id]);
+  }, [selectedDay, club.id]); // shouldn't be in a useEffect
 
-  // Generate slots using recurring availability rules
   const slots = useMemo(() => {
     const weekday = selectedDay.getDay();
 
-    const todaysRules = club.recurring_availability.filter(
-      (r) => r.weekday === weekday,
-    );
+    const todaysRules = club.recurring_availability.filter((r) => r.weekday === weekday);
 
     if (!todaysRules.length) return [];
 
@@ -68,7 +62,7 @@ export default function CalendarClient({ club }: Props) {
         selectedDay.getMonth(),
         selectedDay.getDate(),
         sh,
-        sm,
+        sm
       );
 
       const close = new Date(
@@ -76,7 +70,7 @@ export default function CalendarClient({ club }: Props) {
         selectedDay.getMonth(),
         selectedDay.getDate(),
         eh,
-        em,
+        em
       );
 
       let cursor = open;
@@ -106,11 +100,7 @@ export default function CalendarClient({ club }: Props) {
         const bookedStart = new Date(b.start_ts);
         const bookedEnd = new Date(b.end_ts);
 
-        return (
-          b.court_id === slot.court.id &&
-          slotStart < bookedEnd &&
-          slotEnd > bookedStart
-        );
+        return b.court_id === slot.court.id && slotStart < bookedEnd && slotEnd > bookedStart;
       });
 
       return { ...slot, booked: isBooked };
@@ -124,12 +114,10 @@ export default function CalendarClient({ club }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* DAY SELECTOR */}
       <div className="overflow-x-auto">
         <div className="flex gap-3 pb-2">
           {days.map((d) => {
-            const isSelected =
-              format(d, "yyyy-MM-dd") === format(selectedDay, "yyyy-MM-dd");
+            const isSelected = format(d, "yyyy-MM-dd") === format(selectedDay, "yyyy-MM-dd");
 
             return (
               <button
@@ -147,7 +135,6 @@ export default function CalendarClient({ club }: Props) {
         </div>
       </div>
 
-      {/* SLOTS */}
       <Card>
         <CardContent>
           <div className="text-lg font-semibold mb-4">
@@ -162,11 +149,9 @@ export default function CalendarClient({ club }: Props) {
                 {slotsWithStatus
                   .filter((s) => s.court.id === court.id)
                   .map((s, idx) => {
-                    const base =
-                      "px-3 py-2 rounded-lg border text-sm cursor-pointer";
+                    const base = "px-3 py-2 rounded-lg border text-sm cursor-pointer";
                     const available = "bg-white hover:bg-muted";
-                    const booked =
-                      "bg-gray-200 text-gray-500 cursor-not-allowed line-through";
+                    const booked = "bg-gray-200 text-gray-500 cursor-not-allowed line-through";
 
                     return (
                       <button
@@ -185,7 +170,6 @@ export default function CalendarClient({ club }: Props) {
         </CardContent>
       </Card>
 
-      {/* MODAL */}
       {selectedSlot && (
         <BookingModal
           open={isModalOpen}

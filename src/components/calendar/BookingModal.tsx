@@ -4,12 +4,7 @@ import { addMinutes, format } from "date-fns";
 import { useState, useEffect, useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 type BookingModalProps = {
   open: boolean;
@@ -49,9 +44,7 @@ export default function BookingModal({
     setLoading(true);
 
     const startTs = slot.start.toISOString();
-    const endTs = new Date(
-      slot.start.getTime() + selectedDuration * 60000,
-    ).toISOString();
+    const endTs = new Date(slot.start.getTime() + selectedDuration * 60000).toISOString();
 
     const res = await fetch("/api/stripe/create-checkout-session", {
       method: "POST",
@@ -61,7 +54,7 @@ export default function BookingModal({
         courtId: slot.court.id,
         startTs,
         endTs,
-        userId: null, // or pass the logged-in user ID once added auth
+        userId: null, // pass the logged-in user ID once added auth
       }),
     });
 
@@ -84,7 +77,6 @@ export default function BookingModal({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Time summary */}
           <div className="text-sm space-y-1">
             <div>
               <strong>Start:</strong> {format(slot.start, "HH:mm")}
@@ -94,7 +86,6 @@ export default function BookingModal({
             </div>
           </div>
 
-          {/* Duration selector */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Select duration</label>
             <div className="flex flex-wrap gap-2">
@@ -110,11 +101,7 @@ export default function BookingModal({
             </div>
           </div>
 
-          <Button
-            className="w-full"
-            disabled={loading}
-            onClick={handleCheckout}
-          >
+          <Button className="w-full" disabled={loading} onClick={handleCheckout}>
             {loading ? "Redirecting…" : "Continue to Payment"}
           </Button>
         </div>
